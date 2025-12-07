@@ -1,6 +1,8 @@
 from os import path, remove
-from subprocess import PIPE, run
 from uuid import uuid4
+
+from docker import from_env
+from docker.errors import DockerException
 
 from domain.scan_result import ScanResult
 from domain.severity import Severity
@@ -21,47 +23,53 @@ class DockerSockPoC(VulnerabilityCheck):
 
     def execute(self) -> ScanResult:
         test_filename = f"integrity_guard_{uuid4().hex}.test"
-        host_path = f"/tmp/{test_filename}"
-
-        # Command replicates the attack flow in Figure 2 [cite: 111-114]
-        cmd = [
-            "docker",
-            "run",
-            "--rm",
-            "-v",
-            "/etc:/mnt/host_tmp",
-            "alpine",
-            "sh",
-            "-c",
-            f"echo 'PoC' > /mnt/host_tmp/{test_filename}",
-        ]
+        host_path = "/etc"
+        file_path = path.join(host_path, test_filename)
 
         try:
-            run(cmd, stdout=PIPE, stderr=PIPE, timeout=10)
+            client = from_env()
 
-            if path.exists(host_path):
-                remove(host_path) if self.cleanup else None
+            client.containers.run(
+                image="alpine",
+                command=f"sh -c 'echo PoC > /mnt/host_tmp/{test_filename}'",
+                remove=True,
+                volumes={
+                    host_path : {'bind': '/mnt/host_tmp', 'mode': 'rw'}
+                }
+            )
 
+            if not path.exists(file_path):
                 return ScanResult(
                     check_id=self.ID,
                     check_name=self.NAME,
-                    is_vulnerable=True,
-                    severity=Severity.CRITICAL,
-                    description="Verifies if a container can modify host files (Data Tampering).",
-                    evidence="Successfully wrote file to host /tmp via container volume.",
+                    is_vulnerable=False,
+                    severity=Severity.LOW,
+                    description="Verifies if a container can modify host files.",
+                    evidence="Write attempt failed or container runtime unreachable.",
                 )
-        except FileNotFoundError:
+
+            if self.cleanup:
+                remove(file_path)
+
             return ScanResult(
-                self.ID, self.NAME, False, Severity.INFO, "Docker CLI not found", "None"
+                check_id=self.ID,
+                check_name=self.NAME,
+                is_vulnerable=True,
+                severity=Severity.CRITICAL,
+                description="Verifies if a container can modify host files (Data Tampering).",
+                evidence=f"Successfully wrote file to host {host_path} via container volume.",
+            )
+
+        except DockerException as e:
+            return ScanResult(
+                self.ID, self.NAME, False, Severity.INFO, "Docker daemon unreachable", str(e)
             )
         except Exception:
-            pass
-
-        return ScanResult(
-            check_id=self.ID,
-            check_name=self.NAME,
-            is_vulnerable=False,
-            severity=Severity.LOW,
-            description="Verifies if a container can modify host files.",
-            evidence="Write attempt failed or container runtime unreachable.",
-        )
+            return ScanResult(
+                check_id=self.ID,
+                check_name=self.NAME,
+                is_vulnerable=False,
+                severity=Severity.LOW,
+                description="Verifies if a container can modify host files.",
+                evidence="Write attempt failed or container runtime unreachable.",
+            )

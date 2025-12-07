@@ -14,7 +14,7 @@ class DockerGroupCheck(VulnerabilityCheck):
 
     ID = "DX-001"
     NAME = "User Docker Group Membership"
-    
+
     def execute(self) -> ScanResult:
         user = getenv("USER")
         is_member = False
