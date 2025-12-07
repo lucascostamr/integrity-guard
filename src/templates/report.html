@@ -31,7 +31,7 @@
                         <p><strong>Total IEVI Score:</strong> <span class="fs-4">{{ summary.ievi_score }}</span></p>
                         <p><strong>Risk Level:</strong> 
                             <span class="fs-4 
-                                {% if summary.risk_level == 'High' %}risk-high
+                                {% if summary.risk_level == 'High' or summary.risk_level == 'Critical' %}risk-high
                                 {% elif summary.risk_level == 'Medium' %}risk-medium
                                 {% else %}risk-low{% endif %}">
                                 {{ summary.risk_level }}
