@@ -1,0 +1,19 @@
+from dataclasses import dataclass
+
+from domain.severity import Severity
+
+
+@dataclass
+class ScanResult:
+    """
+    Represents the outcome of a single vulnerability check.
+    Open/Closed Principle: You can add fields here (like 'remediation_steps')
+    without breaking the calculators.
+    """
+
+    check_id: str
+    check_name: str
+    is_vulnerable: bool
+    severity: Severity
+    description: str
+    evidence: str
