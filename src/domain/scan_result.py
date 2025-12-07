@@ -15,4 +15,4 @@ class ScanResult:
     severity: Severity
     description: str
     evidence: str
-    recommendation: str = "Nenhuma recomendação."
+    recommendation: str = "No Recommendations"
