@@ -12,7 +12,7 @@ def main():
     
     tool = IntegrityGuardTool([
         DockerGroupCheck(),
-        DockerSockPoC(cleanup=False)
+        DockerSockPoC()
     ])
     
     tool.run_analysis()
