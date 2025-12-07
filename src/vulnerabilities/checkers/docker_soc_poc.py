@@ -67,11 +67,12 @@ class DockerSockPoC(VulnerabilityCheck):
                 severity=Severity.CRITICAL,
                 description="Verifies if a container can modify host files (Data Tampering).",
                 evidence=f"Successfully wrote file to host {host_path} via container volume.",
+                recommendation="Use rootless Docker (https://docs.docker.com/engine/security/rootless/) or ensure Docker socket is not exposed.",
             )
 
         except DockerException as e:
             return ScanResult(
-                self.ID, self.NAME, False, Severity.INFO, "Docker daemon unreachable", str(e)
+                self.ID, self.NAME, False, Severity.INFO, "Docker daemon unreachable", str(e), "Ensure Docker is running and accessible."
             )
         except Exception:
             return self._get_safe_result()

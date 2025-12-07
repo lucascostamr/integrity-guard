@@ -34,4 +34,5 @@ class DockerGroupCheck(VulnerabilityCheck):
             severity=Severity.CRITICAL if is_member else Severity.LOW,
             description="Checks if the user has root-equivalent access via docker group.",
             evidence=evidence,
+            recommendation="Remove the user from the 'docker' group to prevent root privilege escalation." if is_member else None,
         )
