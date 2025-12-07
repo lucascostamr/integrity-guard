@@ -7,12 +7,14 @@ from domain.ievi_score import IEVIScore
 from domain.scan_result import ScanResult
 from interfaces.vulnerability_check import VulnerabilityCheck
 from services.ievi_calculator import IEVICalculator
+from services.html_report_generator import HTMLReportGenerator
 
 
 class IntegrityGuardTool:
     def __init__(self, checks: List[VulnerabilityCheck] = None):
         self._checks: List[VulnerabilityCheck] = checks if checks is not None else []
         self._calculator = IEVICalculator()
+        self._report_generator = HTMLReportGenerator()
 
     def run_analysis(self):
         info("--- Starting IntegrityGuard Analysis ---")
@@ -47,3 +49,5 @@ class IntegrityGuardTool:
 
         info("\n--- JSON Output (Ready for HTML Report) ---")
         info(dumps(final_report, indent=4, default=str))
+
+        self._report_generator.generate(final_report)
