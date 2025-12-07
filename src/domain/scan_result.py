@@ -7,8 +7,6 @@ from domain.severity import Severity
 class ScanResult:
     """
     Represents the outcome of a single vulnerability check.
-    Open/Closed Principle: You can add fields here (like 'remediation_steps')
-    without breaking the calculators.
     """
 
     check_id: str

@@ -18,7 +18,6 @@ class IntegrityGuardTool:
         info("--- Starting IntegrityGuard Analysis ---")
         results = []
 
-        # 1. Execute all registered checks
         for check in self._checks:
             result = check.execute()
             results.append(result)
@@ -26,10 +25,8 @@ class IntegrityGuardTool:
                 f"[*] Check {result.check_name}: {'VULNERABLE' if result.is_vulnerable else 'SAFE'}"
             )
 
-        # 2. Calculate IEVI Score based on findings
         ievi_score = self._calculator.calculate(results)
 
-        # 3. Output Report (JSON for your future HTML tool)
         self._generate_report(results, ievi_score)
 
     def _generate_report(self, results: List[ScanResult], score: IEVIScore):
@@ -48,6 +45,5 @@ class IntegrityGuardTool:
             "findings": [asdict(res) for res in results],
         }
 
-        # In a real app, you might save this to 'report.json'
         info("\n--- JSON Output (Ready for HTML Report) ---")
         info(dumps(final_report, indent=4, default=str))
