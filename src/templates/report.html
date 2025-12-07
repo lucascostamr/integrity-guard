@@ -84,7 +84,7 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ finding.description }}</td>
-                                <td>{{ finding.recommendation }}</td>
+                                <td>{{ finding.recommendation | safe}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

@@ -67,7 +67,7 @@ class DockerSockPoC(VulnerabilityCheck):
                 severity=Severity.CRITICAL,
                 description="Verifies if a container can modify host files (Data Tampering).",
                 evidence=f"Successfully wrote file to host {host_path} via container volume.",
-                recommendation="Use rootless Docker (https://docs.docker.com/engine/security/rootless/) or ensure Docker socket is not exposed.",
+                recommendation="Use <a href='https://docs.docker.com/engine/security/rootless/' target='_blank' rel='noopener noreferrer'>Rootless Docker</a> or ensure Docker socket is not exposed.",
             )
 
         except DockerException as e:
