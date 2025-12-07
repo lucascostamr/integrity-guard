@@ -11,7 +11,6 @@ from interfaces.vulnerability_check import VulnerabilityCheck
 
 class DockerSockPoC(VulnerabilityCheck):
     """
-    Implements the Safe PoC (Section 3.4).
     Simulates writing to host filesystem to prove Data Tampering risk.
     """
 
@@ -20,6 +19,16 @@ class DockerSockPoC(VulnerabilityCheck):
 
     def __init__(self, cleanup: bool = True):
         self.cleanup = cleanup
+
+    def _get_safe_result(self) -> ScanResult:
+        return ScanResult(
+            check_id=self.ID,
+            check_name=self.NAME,
+            is_vulnerable=False,
+            severity=Severity.LOW,
+            description="Verifies if a container can modify host files.",
+            evidence="Write attempt failed or container runtime unreachable.",
+        )
 
     def execute(self) -> ScanResult:
         test_filename = f"integrity_guard_{uuid4().hex}.test"
@@ -39,14 +48,7 @@ class DockerSockPoC(VulnerabilityCheck):
             )
 
             if not path.exists(file_path):
-                return ScanResult(
-                    check_id=self.ID,
-                    check_name=self.NAME,
-                    is_vulnerable=False,
-                    severity=Severity.LOW,
-                    description="Verifies if a container can modify host files.",
-                    evidence="Write attempt failed or container runtime unreachable.",
-                )
+                return self._get_safe_result()
 
             if self.cleanup:
                 client.containers.run(
@@ -72,11 +74,4 @@ class DockerSockPoC(VulnerabilityCheck):
                 self.ID, self.NAME, False, Severity.INFO, "Docker daemon unreachable", str(e)
             )
         except Exception:
-            return ScanResult(
-                check_id=self.ID,
-                check_name=self.NAME,
-                is_vulnerable=False,
-                severity=Severity.LOW,
-                description="Verifies if a container can modify host files.",
-                evidence="Write attempt failed or container runtime unreachable.",
-            )
+            return self._get_safe_result()
