@@ -1,4 +1,4 @@
-from os import path, remove
+from os import path
 from uuid import uuid4
 
 from docker import from_env
@@ -49,7 +49,14 @@ class DockerSockPoC(VulnerabilityCheck):
                 )
 
             if self.cleanup:
-                remove(file_path)
+                client.containers.run(
+                    image="alpine",
+                    command=f"sh -c 'rm /mnt/host_tmp/{test_filename}'",
+                    remove=True,
+                    volumes={
+                        host_path : {'bind': '/mnt/host_tmp', 'mode': 'rw'}
+                    }
+                )
 
             return ScanResult(
                 check_id=self.ID,
