@@ -16,3 +16,8 @@ class ScanResult:
     description: str
     evidence: str
     recommendation: str = "No Recommendations"
+    trace: list[str] = None
+
+    def __post_init__(self):
+        if self.trace is None:
+            self.trace = []
