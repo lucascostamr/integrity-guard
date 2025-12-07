@@ -2,47 +2,56 @@ from typing import List
 
 from domain.ievi_score import IEVIScore
 from domain.scan_result import ScanResult
+from domain.severity import Severity
 
 
 class IEVICalculator:
     """
     Service responsible for calculating the Integrity Violation Exposure Index (IEVI).
-    Logic derived from the DREAD model extension proposed in the article.
     """
 
+    _SEVERITY_DREAD_MAP = {
+        Severity.CRITICAL: (10, 10, 10, 10, 10),
+        Severity.HIGH: (8, 9, 9, 8, 9),
+        Severity.MEDIUM: (5, 6, 6, 5, 6),
+        Severity.LOW: (2, 3, 3, 2, 3),
+        Severity.INFO: (0, 1, 1, 0, 1),
+    }
+
     def calculate(self, results: List[ScanResult]) -> IEVIScore:
-        # Default baseline (Safe/Mitigated Scenario)
-        # Based on 'Scenario Mitigated' values from Table 2 [cite: 170]
-        d, r, e, a, di = 3, 4, 4, 3, 4
-        risk_label = "TOLERABLE"
+        current_d, current_r, current_e, current_a, current_di = self._SEVERITY_DREAD_MAP[Severity.INFO]
 
-        # Analyze findings to adjust DREAD values
-        # If Critical Vulnerabilities are found (specifically Docker Socket issues)
-        root_access_risk = any(
-            res.is_vulnerable and res.check_id in ["DX-001", "DX-002"]
-            for res in results
-        )
+        for res in results:
+            d, r, e, a, di = self._SEVERITY_DREAD_MAP.get(
+                res.severity, (0, 0, 0, 0, 0)
+            )
 
-        if root_access_risk:
-            # Replicates 'Scenario Vulnerable' values from Table 2 [cite: 170]
-            # D=10 (System Corruption/Privilege) [cite: 97]
-            # R=10 (Trivial reproducibility) [cite: 100]
-            # E=10 (Trivial exploitability via docker client) [cite: 101]
-            # A=10 (All users on host potentially affected) [cite: 102]
-            # Di=10 (Easy discovery via 'groups' command) [cite: 103]
-            d, r, e, a, di = 10, 10, 10, 10, 10
-            risk_label = "CRITICAL"
+            current_d = max(current_d, d)
+            current_r = max(current_r, r)
+            current_e = max(current_e, e)
+            current_a = max(current_a, a)
+            current_di = max(current_di, di)
 
-        # Calculate IEVI Formula: (Sum / 5) * 10 [cite: 96]
-        raw_average = (d + r + e + a + di) / 5
+        raw_average = (current_d + current_r + current_e + current_a + current_di) / 5
         ievi_total = raw_average * 10
 
         return IEVIScore(
-            damage_potential=d,
-            reproducibility=r,
-            exploitability=e,
-            affected_users=a,
-            discoverability=di,
+            damage_potential=current_d,
+            reproducibility=current_r,
+            exploitability=current_e,
+            affected_users=current_a,
+            discoverability=current_di,
             total_score=ievi_total,
-            risk_level=risk_label,
+            risk_level=self._get_risk_label(ievi_total),
         )
+
+    def _get_risk_label(self, score: float) -> str:
+        if score >= 80:
+            return "CRITICAL"
+        elif score >= 60:
+            return "HIGH"
+        elif score >= 40:
+            return "MEDIUM"
+        elif score >= 20:
+            return "LOW"
+        return "INFO"
