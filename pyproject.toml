@@ -6,7 +6,7 @@ authors = [
     {name = "lucascostamr812@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 dependencies = [
     "docker (>=7.1.0,<8.0.0)"
 ]
