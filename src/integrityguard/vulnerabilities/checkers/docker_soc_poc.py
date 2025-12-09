@@ -4,9 +4,9 @@ from uuid import uuid4
 from docker import from_env
 from docker.errors import DockerException
 
-from domain.scan_result import ScanResult
-from domain.severity import Severity
-from interfaces.vulnerability_check import VulnerabilityCheck
+from integrityguard.domain.scan_result import ScanResult
+from integrityguard.domain.severity import Severity
+from integrityguard.interfaces.vulnerability_check import VulnerabilityCheck
 
 
 class DockerSockPoC(VulnerabilityCheck):

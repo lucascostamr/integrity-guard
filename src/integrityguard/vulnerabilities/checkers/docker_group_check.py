@@ -1,9 +1,9 @@
 from grp import getgrall
 from os import getenv
 
-from domain.scan_result import ScanResult
-from domain.severity import Severity
-from interfaces.vulnerability_check import VulnerabilityCheck
+from integrityguard.domain.scan_result import ScanResult
+from integrityguard.domain.severity import Severity
+from integrityguard.interfaces.vulnerability_check import VulnerabilityCheck
 
 
 class DockerGroupCheck(VulnerabilityCheck):

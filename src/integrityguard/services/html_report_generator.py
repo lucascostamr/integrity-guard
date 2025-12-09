@@ -3,7 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 from logging import info
 
 class HTMLReportGenerator:
-    def __init__(self, template_dir: str = "src/templates", template_name: str = "report.html"):
+    def __init__(self, template_dir: str = "src/integrityguard/templates", template_name: str = "report.html"):
         if not path.isabs(template_dir):
             template_dir = path.join(getcwd(), template_dir)
             

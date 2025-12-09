@@ -1,8 +1,8 @@
 from typing import List
 
-from domain.ievi_score import IEVIScore
-from domain.scan_result import ScanResult
-from domain.severity import Severity
+from integrityguard.domain.ievi_score import IEVIScore
+from integrityguard.domain.scan_result import ScanResult
+from integrityguard.domain.severity import Severity
 
 
 class IEVICalculator:

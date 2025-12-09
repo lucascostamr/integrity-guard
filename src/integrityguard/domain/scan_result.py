@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domain.severity import Severity
+from integrityguard.domain.severity import Severity
 
 
 @dataclass

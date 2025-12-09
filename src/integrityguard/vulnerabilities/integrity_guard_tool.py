@@ -3,18 +3,19 @@ from json import dumps
 from typing import List
 from logging import info
 
-from domain.ievi_score import IEVIScore
-from domain.scan_result import ScanResult
-from interfaces.vulnerability_check import VulnerabilityCheck
-from services.ievi_calculator import IEVICalculator
-from services.html_report_generator import HTMLReportGenerator
+from integrityguard.domain.ievi_score import IEVIScore
+from integrityguard.domain.scan_result import ScanResult
+from integrityguard.interfaces.vulnerability_check import VulnerabilityCheck
+from integrityguard.services.ievi_calculator import IEVICalculator
+from integrityguard.services.html_report_generator import HTMLReportGenerator
 
 
 class IntegrityGuardTool:
-    def __init__(self, checks: List[VulnerabilityCheck] = None):
+    def __init__(self, checks: List[VulnerabilityCheck] = None, output_formats: list[str] = ["json"]):
         self._checks: List[VulnerabilityCheck] = checks if checks is not None else []
         self._calculator = IEVICalculator()
         self._report_generator = HTMLReportGenerator()
+        self._output_formats = output_formats
 
     def run_analysis(self):
         info("--- Starting IntegrityGuard Analysis ---")
@@ -32,6 +33,7 @@ class IntegrityGuardTool:
         self._generate_report(results, ievi_score)
 
     def _generate_report(self, results: List[ScanResult], score: IEVIScore):
+
         final_report = {
             "summary": {
                 "ievi_score": score.total_score,
@@ -47,7 +49,9 @@ class IntegrityGuardTool:
             "findings": [asdict(res) for res in results],
         }
 
-        info("\n--- JSON Output (Ready for HTML Report) ---")
-        info(dumps(final_report, indent=4, default=str))
+        if "json" in self._output_formats:
+            info("\n--- JSON Output (Ready for HTML Report) ---")
+            info(dumps(final_report, indent=4, default=str))
 
-        self._report_generator.generate(final_report)
+        if "html" in self._output_formats:
+            self._report_generator.generate(final_report)
