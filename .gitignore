@@ -3,3 +3,4 @@ integrity_guard_report.html
 .pypirc
 .python-version
 dist
+.env*
