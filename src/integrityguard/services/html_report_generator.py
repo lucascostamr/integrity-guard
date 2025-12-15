@@ -1,11 +1,12 @@
-from os import path, getcwd
+from os import path
 from jinja2 import Environment, FileSystemLoader
 from logging import info
 
 class HTMLReportGenerator:
-    def __init__(self, template_dir: str = "src/integrityguard/templates", template_name: str = "report.html"):
-        if not path.isabs(template_dir):
-            template_dir = path.join(getcwd(), template_dir)
+    def __init__(self, template_dir: str = None, template_name: str = "report.html"):
+        if template_dir is None:
+            base_dir = path.dirname(path.dirname(path.abspath(__file__)))
+            template_dir = path.join(base_dir, "templates")
             
         self._env = Environment(loader=FileSystemLoader(template_dir), autoescape=True)
         self._template_name = template_name
