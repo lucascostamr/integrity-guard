@@ -9,7 +9,7 @@ from integrityguard.domain.severity import Severity
 from integrityguard.interfaces.vulnerability_check import VulnerabilityCheck
 
 
-class DockerSockPoC(VulnerabilityCheck):
+class CreateFileOnHostCheck(VulnerabilityCheck):
     """
     Simulates writing to host filesystem to prove Data Tampering risk.
     """

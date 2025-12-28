@@ -1,7 +1,8 @@
 def main():    
     from argparse import ArgumentParser
     from integrityguard.vulnerabilities.checkers.docker_group_check import DockerGroupCheck
-    from integrityguard.vulnerabilities.checkers.docker_soc_poc import DockerSockPoC
+    from integrityguard.vulnerabilities.checkers.create_file_on_host_check import CreateFileOnHostCheck
+    from integrityguard.vulnerabilities.checkers.etc_shadow_check import EtcShadowCheck
     from integrityguard.vulnerabilities.integrity_guard_tool import IntegrityGuardTool
 
     from logging import basicConfig, INFO
@@ -20,7 +21,8 @@ def main():
 
     tool = IntegrityGuardTool([
         DockerGroupCheck(),
-        DockerSockPoC()
+        CreateFileOnHostCheck(),
+        EtcShadowCheck()
     ], output_formats)
     
     tool.run_analysis()
