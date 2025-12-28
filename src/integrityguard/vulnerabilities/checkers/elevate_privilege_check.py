@@ -62,7 +62,7 @@ class ElevatePrivilegeCheck(VulnerabilityCheck):
             trace.append("Privilege escalation attempt succeeded.")
 
             trace.append("Reverting changes to /etc/passwd...")
-            cleanup_cmd = "sed -i '\\#hacker:x:0:0:Hacker:/root:/bin/sh#d' /mnt/passwd"
+            cleanup_cmd = "sed '\\#hacker:x:0:0:Hacker:/root:/bin/sh#d' /mnt/passwd > /tmp/passwd && cat /tmp/passwd > /mnt/passwd"
             trace.append(
                 f"Command: docker run --rm -v /etc/passwd:/mnt/passwd:rw alpine sh -c '{cleanup_cmd}'"
             )
