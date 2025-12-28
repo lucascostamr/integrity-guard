@@ -15,7 +15,7 @@ class CreateFileOnHostCheck(VulnerabilityCheck):
     """
 
     ID = "DX-002"
-    NAME = "Docker Socket Host Write PoC"
+    NAME = "Create File on Host via Container"
 
     def __init__(self, cleanup: bool = True):
         self.cleanup = cleanup
@@ -31,7 +31,7 @@ class CreateFileOnHostCheck(VulnerabilityCheck):
             check_name=self.NAME,
             is_vulnerable=False,
             severity=Severity.LOW,
-            description="Verifies if a container can modify host files.",
+            description="Verifies if a container can create files on host filesystem.",
             evidence="Write attempt failed or container runtime unreachable.",
             trace=trace,
         )
