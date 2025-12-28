@@ -3,6 +3,7 @@ def main():
     from integrityguard.vulnerabilities.checkers.docker_group_check import DockerGroupCheck
     from integrityguard.vulnerabilities.checkers.create_file_on_host_check import CreateFileOnHostCheck
     from integrityguard.vulnerabilities.checkers.etc_shadow_check import EtcShadowCheck
+    from integrityguard.vulnerabilities.checkers.elevate_privilege_check import ElevatePrivilegeCheck
     from integrityguard.vulnerabilities.integrity_guard_tool import IntegrityGuardTool
 
     from logging import basicConfig, INFO
@@ -22,7 +23,8 @@ def main():
     tool = IntegrityGuardTool([
         DockerGroupCheck(),
         CreateFileOnHostCheck(),
-        EtcShadowCheck()
+        EtcShadowCheck(),
+        ElevatePrivilegeCheck(),
     ], output_formats)
     
     tool.run_analysis()
